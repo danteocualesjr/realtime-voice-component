@@ -72,6 +72,11 @@ export function Example() {
         </DemoSection>
 
         <DemoSection
+          heading="New Demo"
+          description="Open the Coding Tutor demo to try a beginner JavaScript lesson with voice-driven testing, hints, lesson switching, and tutor notes."
+        />
+
+        <DemoSection
           heading="Server Code"
           description="Read the incoming multipart body as raw bytes, then forward it to OpenAI unchanged."
         >

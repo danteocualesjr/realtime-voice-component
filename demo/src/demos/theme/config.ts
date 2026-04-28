@@ -8,6 +8,7 @@ export const THEME_DEMO_INSTRUCTIONS = [
   "Use set_theme to switch between light and dark mode.",
   'Use change_demo with { "demo": "form" } when the user asks for the form demo, form filling, or the field-by-field example.',
   'Use change_demo with { "demo": "chess" } when the user asks for chess, a chessboard, hints, best moves, or playing a move.',
+  'Use change_demo with { "demo": "coding" } when the user asks for coding, JavaScript, tests, hints, or the coding tutor.',
   "The app may send you a system message with the latest theme state.",
   "If the latest theme state already matches the user's request, do not call set_theme. Call send_message and say the page is already in that mode.",
   "Use send_message when you need to talk back to the user; replies appear as animated toasts.",

@@ -31,6 +31,7 @@ export const CHESS_DEMO_INSTRUCTIONS = [
   "Use reset_board only when the user explicitly asks to reset, restart, or start a new game.",
   'Use change_demo with { "demo": "theme" } when the user asks for the theme example, light mode, dark mode, or theme switching.',
   'Use change_demo with { "demo": "form" } when the user asks for the form demo, PT intake form, or form filling.',
+  'Use change_demo with { "demo": "coding" } when the user asks for coding, JavaScript, tests, hints, or the coding tutor.',
   "Keep any text reply extremely short and action-focused.",
   "Wake-word activation is handled by the demo itself.",
 ].join(" ");

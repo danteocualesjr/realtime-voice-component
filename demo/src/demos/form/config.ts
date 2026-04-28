@@ -75,6 +75,7 @@ export const FORM_DEMO_INSTRUCTIONS = [
   "Use get_unfilled_fields when the request is partial, unclear, or missing required information.",
   'Use change_demo with { "demo": "theme" } when the user asks for the theme example, light mode, dark mode, or the simple theme-switching demo.',
   'Use change_demo with { "demo": "chess" } when the user asks for chess, a chessboard, hints, a best move, or to play a move.',
+  'Use change_demo with { "demo": "coding" } when the user asks for coding, JavaScript, tests, hints, or the coding tutor.',
   "Use send_message when you need one short follow-up question or a short confirmation toast.",
   "Use submit_form only when the user explicitly asks to submit, save, or send the form.",
   "If the user asks for both edits and submission, finish the field updates first and submit last.",

@@ -6,6 +6,7 @@ import { OverviewDemoPage } from "./demos/overview";
 import { DemoSessionProvider } from "./demos/shared/session";
 import { ThemeDemoPage } from "./demos/theme";
 import { ChessDemoPage } from "./demos/chess";
+import { CodingDemoPage } from "./demos/coding";
 
 export function App() {
   return (
@@ -17,6 +18,7 @@ export function App() {
           <Route path="/demo/theme" element={<ThemeDemoPage />} />
           <Route path="/demo/form" element={<FormDemoPage />} />
           <Route path="/demo/chess" element={<ChessDemoPage />} />
+          <Route path="/demo/coding" element={<CodingDemoPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </DemoSessionProvider>
