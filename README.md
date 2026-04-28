@@ -437,3 +437,4 @@ Then import from `realtime-voice-component` and
 - [Authentication](./docs/authentication.md)
 - [Showcase demo architecture](./docs/demo-architecture.md)
 - [API reference](./docs/api-reference.md)
+# realtime-voice-component
