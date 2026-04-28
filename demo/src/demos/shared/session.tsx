@@ -20,7 +20,7 @@ type DemoSessionContextValue = {
 
 type SharedDemoControllerBaseOptions = Pick<
   UseVoiceControlOptions,
-  "instructions" | "postToolResponse" | "tools"
+  "debug" | "instructions" | "onError" | "postToolResponse" | "tools"
 >;
 
 type SharedDemoControllerOptions = SharedDemoControllerBaseOptions & {
@@ -37,7 +37,9 @@ function buildBaseControllerOptions(
     activationMode: "vad",
     model: "gpt-realtime-1.5",
     outputMode: "tool-only",
+    ...(options.debug !== undefined ? { debug: options.debug } : {}),
     ...(options.instructions !== undefined ? { instructions: options.instructions } : {}),
+    ...(options.onError !== undefined ? { onError: options.onError } : {}),
     ...(options.postToolResponse !== undefined
       ? { postToolResponse: options.postToolResponse }
       : {}),
@@ -105,7 +107,9 @@ export function useSharedDemoController(options: SharedDemoControllerOptions) {
   }, [
     context.controller,
     options.demoId,
+    options.debug,
     options.instructions,
+    options.onError,
     options.postToolResponse,
     options.tools,
   ]);

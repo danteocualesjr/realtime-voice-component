@@ -29,6 +29,7 @@ type UseCodingDemoVoiceControllerOptions = {
   setCode: (code: string) => void;
   setLesson: (lesson: CodingLessonId) => void;
   setTutorNote: (message: string) => void;
+  onVoiceError: (message: string) => void;
   showNextHint: () => { hint: string; hintIndex: number; exhausted: boolean };
 };
 
@@ -45,6 +46,7 @@ export function useCodingDemoVoiceController({
   setCode,
   setLesson,
   setTutorNote,
+  onVoiceError,
   showNextHint,
 }: UseCodingDemoVoiceControllerOptions) {
   const navigate = useNavigate();
@@ -89,14 +91,19 @@ export function useCodingDemoVoiceController({
       setCode,
       setLesson,
       setTutorNote,
+      onVoiceError,
       showNextHint,
     ],
   );
 
   const { controller, runtime } = useSharedDemoController({
     demoId: "coding",
+    debug: true,
     instructions: CODING_DEMO_INSTRUCTIONS,
-    postToolResponse: true,
+    onError: (error) => {
+      onVoiceError(`Voice connection failed (${error.code ?? "unknown"}): ${error.message}`);
+    },
+    postToolResponse: false,
     tools,
   });
 

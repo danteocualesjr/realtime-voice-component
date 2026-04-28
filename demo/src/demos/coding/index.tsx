@@ -66,6 +66,10 @@ export function CodingDemoPage() {
     setTutorNoteState(message);
   }, []);
 
+  const handleVoiceError = useCallback((message: string) => {
+    setTutorNoteState(message);
+  }, []);
+
   const setCode = useCallback((nextCode: string) => {
     setCodeState(nextCode);
     setTestRun(null);
@@ -150,6 +154,7 @@ export function CodingDemoPage() {
     setCode,
     setLesson,
     setTutorNote,
+    onVoiceError: handleVoiceError,
     showNextHint,
   });
 
