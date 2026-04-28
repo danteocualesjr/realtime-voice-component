@@ -79,7 +79,8 @@ npm run demo
   internally owned one.
 - `VoiceControlWidget` is a launcher UI on top of the controller.
 - `useGhostCursor()` and `GhostCursorOverlay` are optional visible confirmation
-  helpers.
+  helpers. The cursor stays visible by default so users can follow each scripted
+  move across the page.
 
 ## Recommended Default Flow
 

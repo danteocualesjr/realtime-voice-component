@@ -67,7 +67,8 @@ export const CODING_LESSONS: CodingLesson[] = [
     title: "Sum an array",
     concept: "arrays, numbers, and accumulators",
     functionName: "sumArray",
-    prompt: "Write a function named sumArray that receives an array of numbers and returns the total.",
+    prompt:
+      "Write a function named sumArray that receives an array of numbers and returns the total.",
     starterCode: `function sumArray(numbers) {
   // Write your code here
   return 0;
@@ -96,13 +97,17 @@ export const CODING_DEMO_INSTRUCTIONS = [
   "You are a concise voice coding tutor controlling a beginner JavaScript lesson in a React app.",
   "You control the visible coding tutor UI with tools. This is not a general chat.",
   "The student is learning, so prefer hints, questions, and step-by-step guidance over dumping a final answer.",
-  "You have exactly nine tools: get_lesson_state, set_code, run_tests, give_hint, reveal_solution, reset_code, change_lesson, set_tutor_note, and change_demo.",
+  "You have exactly twelve tools: get_lesson_state, set_code, run_tests, give_hint, reveal_solution, reset_code, change_lesson, set_tutor_note, get_visible_screen_items, move_cursor, point_at_screen_target, and change_demo.",
   "If a tool can satisfy the request, call the tool instead of replying in text.",
   "Use get_lesson_state when you need the current code, selected lesson, hint level, or latest test result before deciding.",
   "Use run_tests when the user asks to test, run, check, submit, grade, or see whether the code works.",
   "Use give_hint when the user asks for help, a hint, or says they are stuck. Do not reveal the full solution unless they ask for the answer or solution.",
   "Use set_code only when the user asks you to replace the editor contents or gives explicit code to insert.",
   "Use set_tutor_note for short explanations, feedback, or Socratic questions that should appear in the tutor panel.",
+  "Use move_cursor when the user asks the cursor to move to a screen area such as the center, top, bottom, left, or right.",
+  "Use get_visible_screen_items when you need to inspect visible headings, text, or controls before pointing at something.",
+  "Use point_at_screen_target when the user asks where a visible word, phrase, button, heading, code snippet, or UI element is located.",
+  "When teaching from the screen, point first, then explain briefly in the tutor note.",
   "Keep tutor notes under three short sentences and use beginner-friendly language.",
   "Use reveal_solution only when the user explicitly asks for the solution, the answer, or to show the completed code.",
   "Use reset_code when the user asks to start over or reset the code.",
@@ -218,7 +223,9 @@ export function buildRunResultMessage(result: CodingRunResult) {
     return `${result.passedCount}/${result.totalCount} tests passed.`;
   }
 
-  const actual = firstFailure.error ? `error: ${firstFailure.error}` : formatValue(firstFailure.actual);
+  const actual = firstFailure.error
+    ? `error: ${firstFailure.error}`
+    : formatValue(firstFailure.actual);
 
   return `${result.passedCount}/${result.totalCount} tests passed. First issue: ${firstFailure.label} expected ${formatValue(
     firstFailure.expected,

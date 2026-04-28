@@ -428,7 +428,8 @@ export type GhostCursorTarget = {
 
 export type UseGhostCursorOptions = {
   viewportPadding?: number;
-  idleHideMs?: number;
+  idleHideMs?: number | null;
+  hideOnScroll?: boolean;
   scrollSettleMs?: number;
 };
 

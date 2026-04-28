@@ -142,6 +142,7 @@ Widget-specific props:
 Useful ghost cursor behavior:
 
 - supports `from: "pointer" | "previous" | point`
-- hides after scroll
+- stays visible by default so motion starts from the last scripted position
+- supports opt-in hiding with `idleHideMs` and `hideOnScroll`
 - respects reduced motion
 - surfaces an error phase if the wrapped operation throws

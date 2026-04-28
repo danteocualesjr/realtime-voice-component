@@ -13,7 +13,15 @@ type UseGhostCursorOptions = object;
 ### idleHideMs?
 
 ```ts
-optional idleHideMs: number;
+optional idleHideMs: number | null;
+```
+
+---
+
+### hideOnScroll?
+
+```ts
+optional hideOnScroll: boolean;
 ```
 
 ---

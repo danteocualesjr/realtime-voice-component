@@ -6,18 +6,19 @@ inline integration.
 
 ## Overall Structure
 
-The demo app has four routes:
+The demo app has five routes:
 
 - overview
 - theme demo
 - form demo
 - chess demo
+- coding tutor demo
 
-All four routes sit inside `DemoSessionProvider`, which owns one shared
+All five routes sit inside `DemoSessionProvider`, which owns one shared
 controller for the whole demo app.
 
 The overview route configures that shared controller with an inert overview
-session. The theme, form, and chess routes reuse the same controller with
+session. The theme, form, chess, and coding routes reuse the same controller with
 route-specific instructions and tools.
 
 ## Shared Controller Pattern
@@ -73,6 +74,31 @@ Important patterns:
 - a separate tool for discovering missing data instead of relying on guesswork
 
 This is the best example of a multi-step integration.
+
+## Coding Tutor Demo
+
+The coding tutor demo combines lesson-specific tools with screen-aware pointing
+tools:
+
+- `get_lesson_state`
+- `set_code`
+- `run_tests`
+- `give_hint`
+- `reveal_solution`
+- `reset_code`
+- `change_lesson`
+- `set_tutor_note`
+- `get_visible_screen_items`
+- `move_cursor`
+- `point_at_screen_target`
+- `change_demo`
+
+Important patterns:
+
+- the tutor can move the cursor to viewport landmarks like the center of the screen
+- visible DOM text and controls can be listed before the tutor points at a match
+- pointing remains visual confirmation; the app still owns every real state change
+- screen-aware explanations stay constrained to what the app can inspect
 
 ## Wake Word Layer
 

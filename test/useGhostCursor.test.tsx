@@ -90,6 +90,18 @@ describe("useGhostCursor", () => {
     vi.useRealTimers();
   });
 
+  it("starts with the main cursor visible", () => {
+    render(<HookHarness />);
+
+    const cursorElement = document.querySelector(".vc-ghost-cursor");
+    if (!cursorElement) {
+      throw new Error("Expected visible ghost cursor.");
+    }
+
+    expect(screen.getByTestId("phase")).toHaveTextContent("arrived");
+    expect(cursorElement).toHaveAttribute("data-role", "main");
+  });
+
   it("moves to an explicit point", async () => {
     render(<HookHarness />);
 
@@ -109,7 +121,7 @@ describe("useGhostCursor", () => {
     expect(cursorElement).toHaveStyle("--vc-ghost-cursor-y: 220px");
   });
 
-  it("moves to an element center and hides on scroll", async () => {
+  it("moves to an element center and stays visible on scroll by default", async () => {
     render(
       <>
         <HookHarness />
@@ -146,7 +158,41 @@ describe("useGhostCursor", () => {
     });
 
     cursorElement = document.querySelector(".vc-ghost-cursor");
-    expect(cursorElement).toBeNull();
+    expect(cursorElement).not.toBeNull();
+    expect(screen.getByTestId("phase")).toHaveTextContent("arrived");
+  });
+
+  it("can hide on scroll when configured", async () => {
+    render(
+      <>
+        <HookHarness options={{ hideOnScroll: true }} />
+        <button data-testid="target" type="button">
+          target
+        </button>
+      </>,
+    );
+
+    const target = screen.getByTestId("target");
+    setRect(target, {
+      left: 40,
+      top: 50,
+      width: 100,
+      height: 40,
+    });
+
+    await act(async () => {
+      const movement = getCursor().run({ element: target }, () => undefined);
+      await vi.advanceTimersByTimeAsync(1200);
+      await movement;
+    });
+
+    expect(document.querySelector(".vc-ghost-cursor")).not.toBeNull();
+
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+    });
+
+    expect(document.querySelector(".vc-ghost-cursor")).toBeNull();
   });
 
   it("uses reduced motion without travel animation", async () => {
@@ -266,7 +312,7 @@ describe("useGhostCursor", () => {
     expect(screen.getByTestId("phase")).toHaveTextContent("error");
   });
 
-  it("runs batched cursor steps, scrolls off-screen targets into view, and hides afterward", async () => {
+  it("runs batched cursor steps, scrolls off-screen targets into view, and stays visible afterward", async () => {
     render(
       <>
         <HookHarness />
@@ -310,7 +356,8 @@ describe("useGhostCursor", () => {
     expect(results).toEqual(["a:done", "b:done"]);
     expect(operation).toHaveBeenCalledTimes(2);
     expect(targetA.scrollIntoView as ReturnType<typeof vi.fn>).toHaveBeenCalledTimes(1);
-    expect(document.querySelector(".vc-ghost-cursor")).toBeNull();
+    expect(document.querySelector(".vc-ghost-cursor")).not.toBeNull();
+    expect(screen.getByTestId("phase")).toHaveTextContent("arrived");
   });
 
   it("hides the cursor immediately when hide is called", async () => {

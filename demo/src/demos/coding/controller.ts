@@ -8,7 +8,10 @@ import { CODING_DEMO_INSTRUCTIONS, type CodingLessonId, type CodingRunResult } f
 import {
   createChangeLessonTool,
   createGetLessonStateTool,
+  createGetVisibleScreenItemsTool,
   createGiveHintTool,
+  createMoveCursorTool,
+  createPointAtScreenTargetTool,
   createResetCodeTool,
   createRevealSolutionTool,
   createRunTestsTool,
@@ -67,6 +70,9 @@ export function useCodingDemoVoiceController({
       createResetCodeTool({ getResetButton, resetCode, runCursor, setTutorNote }),
       createChangeLessonTool({ getLessonButton, runCursor, setLesson, setTutorNote }),
       createSetTutorNoteTool({ setTutorNote }),
+      createGetVisibleScreenItemsTool(),
+      createMoveCursorTool({ runCursor, setTutorNote }),
+      createPointAtScreenTargetTool({ runCursor, setTutorNote }),
       createChangeDemoTool({
         getActiveDemo: () => "coding",
         getDemoTab: (demo) =>

@@ -98,7 +98,8 @@ Useful details from the implementation:
 - `from: "previous"` makes chained actions feel continuous
 - the hook scrolls off-screen targets into view before animating
 - reduced-motion users get simplified arrival feedback instead of travel animation
-- scrolling, touch movement, and wheel input dismiss the cursor
+- the cursor stays visible at its last scripted position by default
+- set `idleHideMs` or `hideOnScroll` when a flow should dismiss it automatically
 - `runEach()` is good for sequences of field-by-field updates
 
 ## Cursor Best Practices

@@ -276,6 +276,9 @@ export function CustomVoiceControls({
 Optional: visible confirmation with the ghost cursor
 
 The ghost cursor is visual confirmation only. It does not perform the real app action.
+It stays visible by default at its last scripted position so users can follow the next
+motion across the page. Set `idleHideMs` or `hideOnScroll` only when the host flow
+should dismiss it automatically.
 
 ```tsx
 import {

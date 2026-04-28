@@ -17,7 +17,7 @@ const DEFAULT_VIEWPORT_PADDING = 72;
 const MIN_TRAVEL_MS = 320;
 const MAX_TRAVEL_MS = 560;
 const ARRIVAL_PULSE_MS = 180;
-const DEFAULT_IDLE_HIDE_MS = 5000;
+const DEFAULT_IDLE_HIDE_MS: number | null = null;
 const DEFAULT_SCROLL_SETTLE_MS = 220;
 const STEP_HOLD_MS = 260;
 const FAST_BATCH_MIN_TRAVEL_MS = 130;
@@ -170,6 +170,7 @@ function getBatchScrollTarget(elements: HTMLElement[]) {
 
 export function useGhostCursor({
   idleHideMs = DEFAULT_IDLE_HIDE_MS,
+  hideOnScroll = false,
   scrollSettleMs = DEFAULT_SCROLL_SETTLE_MS,
   viewportPadding = DEFAULT_VIEWPORT_PADDING,
 }: UseGhostCursorOptions = {}): UseGhostCursorReturn {
@@ -177,7 +178,7 @@ export function useGhostCursor({
     main: {
       id: "main",
       role: "main",
-      phase: "hidden",
+      phase: "arrived",
       position: getViewportFallbackPoint(),
       durationMs: 0,
       easing: "smooth",
@@ -224,6 +225,10 @@ export function useGhostCursor({
 
   const scheduleHide = useCallback(() => {
     clearHideTimer();
+    if (idleHideMs === null) {
+      return;
+    }
+
     hideTimerRef.current = window.setTimeout(() => {
       hideAllCursors();
     }, idleHideMs);
@@ -357,6 +362,10 @@ export function useGhostCursor({
       return;
     }
 
+    if (!hideOnScroll) {
+      return;
+    }
+
     const passiveListener: AddEventListenerOptions = { passive: true };
     const captureListener: AddEventListenerOptions = { capture: true, passive: true };
 
@@ -371,7 +380,7 @@ export function useGhostCursor({
       window.removeEventListener("scroll", dismissCursors, passiveListener);
       document.removeEventListener("scroll", dismissCursors, captureListener);
     };
-  }, [dismissCursors]);
+  }, [dismissCursors, hideOnScroll]);
 
   useEffect(
     () => () => {
@@ -526,21 +535,20 @@ export function useGhostCursor({
       }
 
       if (!hasResolvedTarget) {
-        hideAllCursors();
         return results;
       }
 
       await wait(FAST_BATCH_FINAL_HOLD_MS);
-      hideAllCursors();
+      scheduleHide();
       return results;
     },
     [
       animateMainCursorTravel,
       clearActiveTargets,
       clearHideTimer,
-      hideAllCursors,
       pulseTargets,
       resolveOrigin,
+      scheduleHide,
       scrollSettleMs,
       updateMainCursor,
       viewportPadding,
