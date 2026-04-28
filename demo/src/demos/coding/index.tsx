@@ -60,11 +60,64 @@ export function CodingDemoPage() {
     testRun,
     tutorNote,
   });
+  const tutorAudioRef = useRef<HTMLAudioElement | null>(null);
+  const tutorSpeechRequestRef = useRef(0);
   const { cursorState, run } = useGhostCursor();
+
+  const speakTutorNote = useCallback(async (message: string) => {
+    if (!message.trim()) {
+      return;
+    }
+
+    const requestId = tutorSpeechRequestRef.current + 1;
+    tutorSpeechRequestRef.current = requestId;
+
+    try {
+      tutorAudioRef.current?.pause();
+      if (tutorAudioRef.current?.src) {
+        URL.revokeObjectURL(tutorAudioRef.current.src);
+      }
+
+      const response = await fetch("/speak", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: message }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const audioBlob = await response.blob();
+      if (tutorSpeechRequestRef.current !== requestId) {
+        return;
+      }
+
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      tutorAudioRef.current = audio;
+      audio.addEventListener(
+        "ended",
+        () => {
+          URL.revokeObjectURL(audioUrl);
+          if (tutorAudioRef.current === audio) {
+            tutorAudioRef.current = null;
+          }
+        },
+        { once: true },
+      );
+      await audio.play();
+    } catch {
+      // Keep the written tutor note usable even if speech synthesis is unavailable.
+    }
+  }, []);
 
   const setTutorNote = useCallback((message: string) => {
     setTutorNoteState(message);
-  }, []);
+    void speakTutorNote(message);
+  }, [speakTutorNote]);
 
   const handleVoiceError = useCallback((message: string) => {
     setTutorNoteState(message);
@@ -82,8 +135,8 @@ export function CodingDemoPage() {
     setCodeState(nextLesson.starterCode);
     setHintIndex(0);
     setTestRun(null);
-    setTutorNoteState(`New lesson: ${nextLesson.title}. ${nextLesson.prompt}`);
-  }, []);
+    setTutorNote(`New lesson: ${nextLesson.title}. ${nextLesson.prompt}`);
+  }, [setTutorNote]);
 
   const lesson = getCodingLesson(lessonId);
   stateRef.current = {
@@ -97,9 +150,9 @@ export function CodingDemoPage() {
   const runTests = useCallback(() => {
     const result = runCodingLessonTests(stateRef.current.code, stateRef.current.lesson);
     setTestRun(result);
-    setTutorNoteState(buildRunResultMessage(result));
+    setTutorNote(buildRunResultMessage(result));
     return result;
-  }, []);
+  }, [setTutorNote]);
 
   const showNextHint = useCallback(() => {
     const current = stateRef.current;
@@ -200,6 +253,15 @@ export function CodingDemoPage() {
     canActivateWidget: canActivateFromWakeWord,
     onWakeWord: () => activateWidgetFromWakeWord(),
   });
+
+  useEffect(() => {
+    return () => {
+      tutorAudioRef.current?.pause();
+      if (tutorAudioRef.current?.src) {
+        URL.revokeObjectURL(tutorAudioRef.current.src);
+      }
+    };
+  }, []);
 
   return (
     <DemoPageShell>

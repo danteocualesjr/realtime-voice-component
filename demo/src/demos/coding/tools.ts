@@ -98,8 +98,7 @@ export function createRunTestsTool({
   getRunButton,
   runCursor,
   runTests,
-  setTutorNote,
-}: Pick<CreateCodingToolOptions, "getRunButton" | "runCursor" | "runTests" | "setTutorNote">) {
+}: Pick<CreateCodingToolOptions, "getRunButton" | "runCursor" | "runTests">) {
   return defineVoiceTool({
     name: "run_tests",
     description: "Run the visible lesson tests against the current code.",
@@ -120,7 +119,6 @@ export function createRunTestsTool({
       );
 
       const message = buildRunResultMessage(result);
-      setTutorNote(message);
 
       return {
         message,

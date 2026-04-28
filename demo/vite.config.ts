@@ -30,6 +30,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/session": sessionServerOrigin,
+      "/speak": sessionServerOrigin,
     },
   },
   build: {

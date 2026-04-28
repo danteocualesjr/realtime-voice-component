@@ -55,7 +55,7 @@ export function useCodingDemoVoiceController({
     () => [
       createGetLessonStateTool({ getState }),
       createSetCodeTool({ getEditorElement, runCursor, setCode }),
-      createRunTestsTool({ getRunButton, runCursor, runTests, setTutorNote }),
+      createRunTestsTool({ getRunButton, runCursor, runTests }),
       createGiveHintTool({ showNextHint, setTutorNote }),
       createRevealSolutionTool({
         getEditorElement,
