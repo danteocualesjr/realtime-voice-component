@@ -34,9 +34,13 @@ const DEFAULT_SPRING_STIFFNESS = 290;
 const DEFAULT_SPRING_DAMPING = 24;
 
 export function getViewportSize(): CornerSnapSize {
+  const documentElement =
+    typeof document === "undefined" ? null : document.documentElement;
+  const viewportWindow = typeof window === "undefined" ? null : window;
+
   return {
-    width: document.documentElement.clientWidth || window.innerWidth || 0,
-    height: document.documentElement.clientHeight || window.innerHeight || 0,
+    width: documentElement?.clientWidth || viewportWindow?.innerWidth || 0,
+    height: documentElement?.clientHeight || viewportWindow?.innerHeight || 0,
   };
 }
 

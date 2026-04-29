@@ -1,8 +1,38 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
-import { clampPositionToViewport } from "../src/internal/cornerSnap";
+import { clampPositionToViewport, getViewportSize } from "../src/internal/cornerSnap";
 
 describe("cornerSnap", () => {
+  const originalDocument = globalThis.document;
+  const originalWindow = globalThis.window;
+
+  afterEach(() => {
+    Object.defineProperty(globalThis, "document", {
+      configurable: true,
+      value: originalDocument,
+    });
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: originalWindow,
+    });
+  });
+
+  it("returns an empty viewport without DOM globals", () => {
+    Object.defineProperty(globalThis, "document", {
+      configurable: true,
+      value: undefined,
+    });
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: undefined,
+    });
+
+    expect(getViewportSize()).toEqual({
+      width: 0,
+      height: 0,
+    });
+  });
+
   it("clamps a wide widget inside the right viewport edge", () => {
     expect(
       clampPositionToViewport(
