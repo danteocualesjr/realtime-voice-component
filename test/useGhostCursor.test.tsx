@@ -102,6 +102,16 @@ describe("useGhostCursor", () => {
     expect(cursorElement).toHaveAttribute("data-role", "main");
   });
 
+  it("does not require matchMedia to mount", () => {
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: undefined,
+    });
+
+    expect(() => render(<HookHarness />)).not.toThrow();
+    expect(screen.getByTestId("phase")).toHaveTextContent("arrived");
+  });
+
   it("moves to an explicit point", async () => {
     render(<HookHarness />);
 

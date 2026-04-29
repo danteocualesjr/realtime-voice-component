@@ -329,11 +329,15 @@ export function useGhostCursor({
   );
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
       return;
     }
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const legacyMediaQuery = mediaQuery as MediaQueryList & {
+      addListener?: (listener: () => void) => void;
+      removeListener?: (listener: () => void) => void;
+    };
     const syncReducedMotion = () => {
       reducedMotionRef.current = mediaQuery.matches;
     };
@@ -346,12 +350,20 @@ export function useGhostCursor({
     };
 
     syncReducedMotion();
-    mediaQuery.addEventListener("change", syncReducedMotion);
+    if ("addEventListener" in mediaQuery) {
+      mediaQuery.addEventListener("change", syncReducedMotion);
+    } else {
+      legacyMediaQuery.addListener?.(syncReducedMotion);
+    }
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("blur", handleWindowBlur);
 
     return () => {
-      mediaQuery.removeEventListener("change", syncReducedMotion);
+      if ("removeEventListener" in mediaQuery) {
+        mediaQuery.removeEventListener("change", syncReducedMotion);
+      } else {
+        legacyMediaQuery.removeListener?.(syncReducedMotion);
+      }
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("blur", handleWindowBlur);
     };
