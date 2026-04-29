@@ -262,8 +262,9 @@ export class WebRtcRealtimeTransport implements RealtimeTransport {
 
     invariantBrowserApi(
       typeof window !== "undefined" &&
-        "RTCPeerConnection" in window &&
-        navigator?.mediaDevices?.getUserMedia,
+        typeof window.RTCPeerConnection === "function" &&
+        typeof navigator !== "undefined" &&
+        typeof navigator.mediaDevices?.getUserMedia === "function",
       "WebRTC voice control requires a browser with mediaDevices and RTCPeerConnection support.",
     );
 
@@ -280,7 +281,7 @@ export class WebRtcRealtimeTransport implements RealtimeTransport {
       this.state.audioElement.autoplay = true;
       this.state.audioElement.muted = !options.audioPlaybackEnabled;
 
-      const peerConnection = new RTCPeerConnection();
+      const peerConnection = new window.RTCPeerConnection();
       this.state.peerConnection = peerConnection;
 
       peerConnection.ontrack = (event) => {

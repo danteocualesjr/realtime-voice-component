@@ -291,6 +291,32 @@ describe("WebRtcRealtimeTransport", () => {
     expect(onError).not.toHaveBeenCalled();
   });
 
+  it("rejects browsers with media capture but no RTCPeerConnection constructor", async () => {
+    const transport = new WebRtcRealtimeTransport();
+    const onError = vi.fn();
+
+    vi.unstubAllGlobals();
+    Object.defineProperty(window, "isSecureContext", {
+      configurable: true,
+      value: true,
+    });
+    Object.defineProperty(window, "RTCPeerConnection", {
+      configurable: true,
+      value: undefined,
+    });
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: {
+        getUserMedia: vi.fn(),
+      },
+    });
+
+    await expect(connect(transport, onError)).rejects.toThrow(
+      "WebRTC voice control requires a browser with mediaDevices and RTCPeerConnection support.",
+    );
+    expect(onError).not.toHaveBeenCalled();
+  });
+
   it("posts direct auth-token requests to the Realtime calls endpoint", async () => {
     const { fetchMock, onError, peerConnections, transport } = setupTransportTest();
 
