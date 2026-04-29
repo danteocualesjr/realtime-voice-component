@@ -423,9 +423,6 @@ export function VoiceControlWidget({
   unstyled = false,
 }: VoiceControlWidgetProps) {
   const runtime = useVoiceControl(controller);
-  if (controllerRef) {
-    controllerRef.current = controller;
-  }
   const resolvedLabels = {
     ...DEFAULT_WIDGET_LABELS,
     ...labels,
@@ -481,15 +478,19 @@ export function VoiceControlWidget({
 
   const hasLauncherError = runtime.status === "error" || runtime.activity === "error";
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!controllerRef) {
       return;
     }
 
+    controllerRef.current = controller;
+
     return () => {
-      controllerRef.current = null;
+      if (controllerRef.current === controller) {
+        controllerRef.current = null;
+      }
     };
-  }, [controllerRef]);
+  }, [controller, controllerRef]);
 
   useEffect(() => {
     if (!hasLauncherError) {
