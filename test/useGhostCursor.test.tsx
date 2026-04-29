@@ -112,6 +112,33 @@ describe("useGhostCursor", () => {
     expect(screen.getByTestId("phase")).toHaveTextContent("arrived");
   });
 
+  it("keeps pointer tracking when matchMedia is unavailable", async () => {
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: undefined,
+    });
+    render(<HookHarness />);
+
+    act(() => {
+      window.dispatchEvent(new MouseEvent("pointermove", { clientX: 14, clientY: 28 }));
+    });
+
+    let movement: Promise<void> | undefined;
+    await act(async () => {
+      movement = getCursor().run({ point: { x: 120, y: 220 } }, () => undefined);
+      await Promise.resolve();
+    });
+
+    expect(screen.getByTestId("phase")).toHaveTextContent("traveling");
+    expect(screen.getByTestId("x")).toHaveTextContent("14");
+    expect(screen.getByTestId("y")).toHaveTextContent("28");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1200);
+      await movement;
+    });
+  });
+
   it("moves to an explicit point", async () => {
     render(<HookHarness />);
 

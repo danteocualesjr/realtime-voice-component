@@ -329,17 +329,22 @@ export function useGhostCursor({
   );
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    if (typeof window === "undefined") {
       return;
     }
 
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const legacyMediaQuery = mediaQuery as MediaQueryList & {
-      addListener?: (listener: () => void) => void;
-      removeListener?: (listener: () => void) => void;
-    };
+    const mediaQuery =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
+    const legacyMediaQuery = mediaQuery
+      ? (mediaQuery as MediaQueryList & {
+          addListener?: (listener: () => void) => void;
+          removeListener?: (listener: () => void) => void;
+        })
+      : null;
     const syncReducedMotion = () => {
-      reducedMotionRef.current = mediaQuery.matches;
+      reducedMotionRef.current = mediaQuery?.matches ?? false;
     };
 
     const handlePointerMove = (event: PointerEvent) => {
@@ -350,19 +355,19 @@ export function useGhostCursor({
     };
 
     syncReducedMotion();
-    if ("addEventListener" in mediaQuery) {
+    if (mediaQuery && "addEventListener" in mediaQuery) {
       mediaQuery.addEventListener("change", syncReducedMotion);
     } else {
-      legacyMediaQuery.addListener?.(syncReducedMotion);
+      legacyMediaQuery?.addListener?.(syncReducedMotion);
     }
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("blur", handleWindowBlur);
 
     return () => {
-      if ("removeEventListener" in mediaQuery) {
+      if (mediaQuery && "removeEventListener" in mediaQuery) {
         mediaQuery.removeEventListener("change", syncReducedMotion);
       } else {
-        legacyMediaQuery.removeListener?.(syncReducedMotion);
+        legacyMediaQuery?.removeListener?.(syncReducedMotion);
       }
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("blur", handleWindowBlur);
