@@ -97,7 +97,6 @@ export function useCodingDemoVoiceController({
       setCode,
       setLesson,
       setTutorNote,
-      onVoiceError,
       showNextHint,
     ],
   );
