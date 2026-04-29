@@ -49,6 +49,31 @@ type AbortableError = Error & {
   code?: string;
 };
 
+function areAuthOptionsEqual(
+  previous: UseVoiceControlOptions["auth"],
+  next: UseVoiceControlOptions["auth"],
+) {
+  if ("sessionEndpoint" in previous || "sessionEndpoint" in next) {
+    return (
+      "sessionEndpoint" in previous &&
+      "sessionEndpoint" in next &&
+      previous.sessionEndpoint === next.sessionEndpoint &&
+      previous.sessionRequestInit === next.sessionRequestInit
+    );
+  }
+
+  if ("tokenEndpoint" in previous || "tokenEndpoint" in next) {
+    return (
+      "tokenEndpoint" in previous &&
+      "tokenEndpoint" in next &&
+      previous.tokenEndpoint === next.tokenEndpoint &&
+      previous.tokenRequestInit === next.tokenRequestInit
+    );
+  }
+
+  return "getClientSecret" in previous && "getClientSecret" in next;
+}
+
 function createAbortError() {
   const error = new Error("Voice control connection was cancelled.") as AbortableError;
   error.name = "AbortError";
@@ -565,6 +590,13 @@ class VoiceControlControllerImpl implements VoiceControlController {
     const previous = this.#options;
     this.#options = options;
 
+    const authChanged = !areAuthOptionsEqual(previous.auth, options.auth);
+    const shouldReconnectForAuth = authChanged && (this.connected || this.activity === "connecting");
+
+    if (shouldReconnectForAuth) {
+      this.disconnect();
+    }
+
     let shouldSyncSession = false;
 
     if (previous.instructions !== options.instructions) {
@@ -606,7 +638,7 @@ class VoiceControlControllerImpl implements VoiceControlController {
       );
     }
 
-    if (options.autoConnect && !previous.autoConnect) {
+    if ((options.autoConnect && !previous.autoConnect) || shouldReconnectForAuth) {
       void this.connect();
     }
   };

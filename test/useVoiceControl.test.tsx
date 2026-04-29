@@ -343,6 +343,74 @@ describe("useVoiceControl", () => {
     });
   });
 
+  it("reconnects an active controller when auth changes", async () => {
+    const transport = new MockRealtimeTransport();
+    const controller = createVoiceControlController({
+      auth: {
+        sessionEndpoint: "/session-a",
+      },
+      tools: [],
+      transportFactory: () => transport,
+    });
+
+    await controller.connect();
+
+    controller.configure({
+      auth: {
+        sessionEndpoint: "/session-b",
+      },
+      tools: [],
+      transportFactory: () => transport,
+    });
+
+    await waitFor(() => {
+      expect(transport.connectOptions?.auth).toMatchObject({
+        type: "session_endpoint",
+        sessionEndpoint: expect.stringMatching(/\/session-b$/),
+      });
+    });
+    expect(transport.sentClientEvents).toContainEqual({ type: "__disconnect" });
+    expect(controller.connected).toBe(true);
+  });
+
+  it("does not reconnect for an equivalent rebuilt sessionEndpoint auth object", async () => {
+    const transport = new MockRealtimeTransport();
+    const controller = createVoiceControlController({
+      auth: {
+        sessionEndpoint: "/session",
+      },
+      tools: [],
+      transportFactory: () => transport,
+    });
+
+    await controller.connect();
+    const disconnectCountBeforeConfigure = transport.sentClientEvents.filter(
+      (event) =>
+        typeof event === "object" &&
+        event !== null &&
+        "type" in event &&
+        event.type === "__disconnect",
+    ).length;
+
+    controller.configure({
+      auth: {
+        sessionEndpoint: "/session",
+      },
+      tools: [],
+      transportFactory: () => transport,
+    });
+
+    const disconnectCountAfterConfigure = transport.sentClientEvents.filter(
+      (event) =>
+        typeof event === "object" &&
+        event !== null &&
+        "type" in event &&
+        event.type === "__disconnect",
+    ).length;
+    expect(disconnectCountAfterConfigure).toBe(disconnectCountBeforeConfigure);
+    expect(controller.connected).toBe(true);
+  });
+
   it("does not expose widget expansion state from the headless controller", () => {
     const transport = new MockRealtimeTransport();
 
