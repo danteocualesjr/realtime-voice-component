@@ -247,7 +247,7 @@ describe("useVoiceControl", () => {
       expect(screen.getByTestId("connected")).toHaveTextContent("true");
     });
 
-    expect(screen.getByTestId("activity")).toHaveTextContent("listening");
+    expect(screen.getByTestId("activity")).toHaveTextContent("idle");
     expect(screen.getByTestId("status")).toHaveTextContent("ready");
     expect(transport.sentClientEvents[0]).toMatchObject({
       type: "session.update",
@@ -303,7 +303,7 @@ describe("useVoiceControl", () => {
     });
     expect(screen.getByTestId("latest-tool")).toHaveTextContent("set_first_name");
     expect(screen.getByTestId("tool-count")).toHaveTextContent("1");
-    expect(screen.getByTestId("activity")).toHaveTextContent("listening");
+    expect(screen.getByTestId("activity")).toHaveTextContent("idle");
 
     const [record] = parseToolCalls();
     expect(record).toBeDefined();
@@ -849,12 +849,12 @@ describe("useVoiceControl", () => {
     });
 
     expect(screen.getByTestId("status")).toHaveTextContent("ready");
-    expect(screen.getByTestId("activity")).toHaveTextContent("listening");
+    expect(screen.getByTestId("activity")).toHaveTextContent("idle");
 
     fireEvent.click(screen.getByRole("button", { name: "stop capture" }));
 
     expect(screen.getByTestId("status")).toHaveTextContent("ready");
-    expect(screen.getByTestId("activity")).toHaveTextContent("listening");
+    expect(screen.getByTestId("activity")).toHaveTextContent("idle");
     expect(onEvent).not.toHaveBeenCalledWith({ type: "voice.capture.stopped" });
     expect(transport.sentClientEvents).not.toContainEqual({ type: "input_audio_buffer.commit" });
   });

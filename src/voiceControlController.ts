@@ -671,7 +671,7 @@ class VoiceControlControllerImpl implements VoiceControlController {
       this.#transport = transport;
       this.#connectAbortController = null;
       this.#setConnected(true);
-      this.#setActivity("listening");
+      this.#setActivity(this.#restingActivity());
       this.#debugLog("connect.ready");
       this.#emitEvent({ type: "voice.transport.connected" });
     } catch (error) {
@@ -951,7 +951,11 @@ class VoiceControlControllerImpl implements VoiceControlController {
   }
 
   #restingActivity() {
-    return this.connected ? "listening" : "idle";
+    if (!this.connected) {
+      return "idle";
+    }
+
+    return this.sessionConfig.activationMode === "vad" || this.#capturing ? "listening" : "idle";
   }
 
   #applySessionUpdate() {
